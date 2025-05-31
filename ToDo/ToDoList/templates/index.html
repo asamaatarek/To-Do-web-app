@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>To-Do App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body{
+            background: rgb(236, 230, 230);
+        }
+        .todo-container {
+            background: rgb(241, 240, 240);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+            margin-top: 5vh;
+        }
+
+        h1 {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .input-task {
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-left: 80px;
+        }
+        .input-task .input-group {
+            max-width: 400px;
+            width: 100%;
+        }
+        .btn {
+            min-width: 90px;
+            background-color: coral;
+            color: black;
+        }
+        .btn:hover{
+            background-color: rgb(245, 95, 41);
+
+        }
+
+        .form-control {
+            border-radius: 0.5rem 0 0 0.5rem;
+        }
+        .list-group-item {
+            border: none;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="todo-container">
+        <h1 class="text-center">To-Do List</h1>
+
+        <form method="POST" class="mb-4 input-task">
+            {% csrf_token %}
+            <div class="input-group">
+                {{ form.title}}
+                <button type="submit" class="btn">Add task</button>
+            </div>
+        </form>
+
+        <ul class="list-group">
+            {% for task in tasks %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        {% if task.completed %}
+                            <s class="text-muted">{{ task.title }}</s>
+                        {% else %}
+                            {{ task.title }}
+                        {% endif %}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <form action="{% url 'toggle' task.id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm {% if task.completed %}btn-warning{% else %}btn-success{% endif %}">
+                                {% if task.completed %}Undo{% else %}Done{% endif %}
+                            </button>
+                        </form>
+                        <form action="{% url 'delete' task.id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="list-group-item text-center text-muted">No tasks yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
